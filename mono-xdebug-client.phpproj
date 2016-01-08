@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!-- Ensures that if this file changes it forces a rebuild -->
+    <PropertyGroup>
+        <MSBuildAllProjects>
+            $(MSBuildAllProjects);$(MSBuildThisFileFullPath)
+        </MSBuildAllProjects>
+    </PropertyGroup>
+	<PropertyGroup Condition="'$(AppType)' == ''">
+		<AppType>Gtk</AppType>
+	</PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <CompilationMode>Pure</CompilationMode>
+		<AdditionalLibPaths>$(AdditionalLibPaths);/usr/lib/monodevelop/bin</AdditionalLibPaths>
+    </PropertyGroup>
+	<ItemGroup Condition="'$(AppType)' == 'Cli'">
+    </ItemGroup>
+	<ItemGroup Condition="'$(AppType)' == 'Gtk'">
+		<Compile Include="src/View/Gtk/App.php"/>
+		<Reference Include="gtk-sharp"/>
+		<Reference Include="Xwt">
+			<Private>true</Private>
+		</Reference>
+		<Reference Include="Xwt.Gtk">
+			<Private>true</Private>
+		</Reference>
+    </ItemGroup>
+    <Import Project="$(MSBuildExtensionsPath)\Phalanger\4.0\Phalanger.targets" />
+</Project>
