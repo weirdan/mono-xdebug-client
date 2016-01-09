@@ -48,6 +48,26 @@ class App
         $placeholder->add($this->editor);
 
 
+
+
+        $that = $this;
+        $markers = [];
+        $this->editor->IconMargin->ButtonReleased->Add(function($widget, $args) use ($that, &$markers) {
+            if ($args->Button == 1) {
+                if (isset($markers[$args->LineNumber])) {
+                    $that->editor->Document->RemoveMarker($markers[$args->LineNumber]);
+                    unset($markers[$args->LineNumber]);
+                } else {
+                    $marker = BreakpointTextmarker::withEditor($that->editor);
+                    $that->editor->Document->AddMarker($args->LineNumber, $marker);
+                    $markers[$args->LineNumber] = $marker;
+                }
+            }
+        });
+
+
+
+
         $this->rootWindow->Destroyed->add([$this, 'quit']);
 
         Gtk\Application::run();

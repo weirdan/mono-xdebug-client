@@ -13,11 +13,23 @@
         <OutputType>Exe</OutputType>
         <CompilationMode>Pure</CompilationMode>
         <AdditionalLibPaths>$(AdditionalLibPaths);/usr/lib/monodevelop/bin</AdditionalLibPaths>
+		<AllowedReferenceRelatedFileExtensions>
+.exe.mdb;
+.dll.mdb;
+.dll.config;
+.exe.config;
+.xml;
+		</AllowedReferenceRelatedFileExtensions>
     </PropertyGroup>
     <ItemGroup Condition="'$(AppType)' == 'Cli'">
     </ItemGroup>
     <ItemGroup Condition="'$(AppType)' == 'Gtk'">
         <Compile Include="src/View/Gtk/App.php"/>
+		<Compile Include="src/View/Gtk/BreakpointTextMarker.php"/>
+		<EmbeddedResource Include="src/View/Gtk/resources/breakpoint.png">
+			<LogicalName>breakpoint.png</LogicalName>
+		</EmbeddedResource>
+		<Reference Include="Mono.Cairo"/>
         <Reference Include="gtk-sharp"/>
         <Reference Include="Xwt">
             <Private>true</Private>
@@ -25,10 +37,10 @@
         <Reference Include="Xwt.Gtk">
             <Private>true</Private>
         </Reference>
-        <Reference Include="Mono.TextEditor">
+        <Reference Include="ICSharpCode.NRefactory">
             <Private>true</Private>
         </Reference>
-        <Reference Include="ICSharpCode.NRefactory">
+        <Reference Include="Mono.TextEditor">
             <Private>true</Private>
         </Reference>
         <Reference Include="PhpNetClassLibrary"/>
