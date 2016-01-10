@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <Import Project="$(MSBuildExtensionsPath)\Phalanger\4.0\Phalanger.targets" />
+
     <!-- Ensures that if this file changes it forces a rebuild -->
     <PropertyGroup>
         <MSBuildAllProjects>
             $(MSBuildAllProjects);$(MSBuildThisFileFullPath)
         </MSBuildAllProjects>
     </PropertyGroup>
+
     <PropertyGroup Condition="'$(AppType)' == ''">
         <AppType>Gtk</AppType>
     </PropertyGroup>
+
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <CompilationMode>Pure</CompilationMode>
         <AdditionalLibPaths>$(AdditionalLibPaths);/usr/lib/monodevelop/bin</AdditionalLibPaths>
-		<AllowedReferenceRelatedFileExtensions>
-.exe.mdb;
-.dll.mdb;
-.dll.config;
-.exe.config;
-.xml;
-		</AllowedReferenceRelatedFileExtensions>
     </PropertyGroup>
+
     <ItemGroup Condition="'$(AppType)' == 'Cli'">
     </ItemGroup>
+
     <ItemGroup Condition="'$(AppType)' == 'Gtk'">
         <Compile Include="src/View/Gtk/App.php"/>
 		<Compile Include="src/View/Gtk/BreakpointTextMarker.php"/>
@@ -46,5 +46,25 @@
         <Reference Include="PhpNetClassLibrary"/>
         <Reference Include="mscorlib"/>
     </ItemGroup>
-    <Import Project="$(MSBuildExtensionsPath)\Phalanger\4.0\Phalanger.targets" />
+
+
+	<Target Name="AfterResolveReferences" DependsOnTargets="CopyRelatedFiles"/>
+
+	<Target Name="CopyRelatedFiles">
+		<ItemGroup>
+			<RelatedFiles Include="@(ReferenceCopyLocalPaths->'%(Identity).config')"/>
+		</ItemGroup>
+		<ItemGroup>
+			<ExistingRelatedFiles Include="@(RelatedFiles)" Condition="Exists('%(RelatedFiles.Identity)')"/>
+		</ItemGroup>
+
+		<Copy
+			SourceFiles="@(ExistingRelatedFiles)"
+			DestinationFiles="@(ExistingRelatedFiles->'$(OutDir)%(DestinationSubDirectory)%(Filename)%(Extension)')"
+			SkipUnchangedFiles="$(SkipCopyUnchangedFiles)">
+			<Output TaskParameter="DestinationFiles" ItemName="FileWritesShareable"/>
+		</Copy>
+		<Message Text="@(FileWrites)"/>
+	</Target>
+
 </Project>
