@@ -64,7 +64,6 @@
 			SkipUnchangedFiles="$(SkipCopyUnchangedFiles)">
 			<Output TaskParameter="DestinationFiles" ItemName="FileWritesShareable"/>
 		</Copy>
-		<Message Text="@(FileWrites)"/>
 	</Target>
 
 </Project>
