@@ -4,6 +4,7 @@ Namespace/Class structure follows [PSR-4](http://www.php-fig.org/psr/psr-4/). La
 their own namespace prefixes. Top-level namespace (vendor prefix) is Weirdan.
 
 Prefixes:
+
 | Layer     | Namespace prefix       | Directory |
 |-----------|------------------------|-----------|
 | Network   | Weirdan\Xdebug\Network | Network   |
