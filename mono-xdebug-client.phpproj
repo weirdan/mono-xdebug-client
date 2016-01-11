@@ -1,69 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-    <Import Project="$(MSBuildExtensionsPath)\Phalanger\4.0\Phalanger.targets" />
-
-    <!-- Ensures that if this file changes it forces a rebuild -->
-    <PropertyGroup>
-        <MSBuildAllProjects>
-            $(MSBuildAllProjects);$(MSBuildThisFileFullPath)
-        </MSBuildAllProjects>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(AppType)' == ''">
-        <AppType>Gtk</AppType>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <CompilationMode>Pure</CompilationMode>
-        <AdditionalLibPaths>$(AdditionalLibPaths);/usr/lib/monodevelop/bin</AdditionalLibPaths>
-    </PropertyGroup>
-
-    <ItemGroup Condition="'$(AppType)' == 'Cli'">
+<Project DefaultTargets="BuildAll" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemGroup>
+        <ProjectItem Include="src\View\Gtk\gtk.phpproj">
+            <ProjectType>Gtk</ProjectType>>
+        </ProjectItem>
+        <ProjectItem Include="src\View\Cli\cli.phpproj">
+            <ProjectType>Cli</ProjectType>>
+        </ProjectItem>
+        <ProjectItem Include="src\Network\net.phpproj">
+            <ProjectType>Net</ProjectType>
+        </ProjectItem>
     </ItemGroup>
 
-    <ItemGroup Condition="'$(AppType)' == 'Gtk'">
-        <Compile Include="src/View/Gtk/App.php"/>
-		<Compile Include="src/View/Gtk/BreakpointTextMarker.php"/>
-		<EmbeddedResource Include="src/View/Gtk/resources/breakpoint.png">
-			<LogicalName>breakpoint.png</LogicalName>
-		</EmbeddedResource>
-		<Reference Include="Mono.Cairo"/>
-        <Reference Include="gtk-sharp"/>
-        <Reference Include="Xwt">
-            <Private>true</Private>
-        </Reference>
-        <Reference Include="Xwt.Gtk">
-            <Private>true</Private>
-        </Reference>
-        <Reference Include="ICSharpCode.NRefactory">
-            <Private>true</Private>
-        </Reference>
-        <Reference Include="Mono.TextEditor">
-            <Private>true</Private>
-        </Reference>
-        <Reference Include="PhpNetClassLibrary"/>
-        <Reference Include="mscorlib"/>
-    </ItemGroup>
+    <Target Name="BuildAll" DependsOnTargets="BuildNet;BuildCli;BuildGtk"/>
 
 
-	<Target Name="AfterResolveReferences" DependsOnTargets="CopyRelatedFiles"/>
+    <Target Name="BuildNet">
+        <MSBuild Projects="@(ProjectItem)" Condition="'%(ProjectType)' == 'Net'"/>
+    </Target>
 
-	<Target Name="CopyRelatedFiles">
-		<ItemGroup>
-			<RelatedFiles Include="@(ReferenceCopyLocalPaths->'%(Identity).config')"/>
-		</ItemGroup>
-		<ItemGroup>
-			<ExistingRelatedFiles Include="@(RelatedFiles)" Condition="Exists('%(RelatedFiles.Identity)')"/>
-		</ItemGroup>
+    <Target Name="BuildCli">
+        <MSBuild Projects="@(ProjectItem)" Condition="'%(ProjectType)' == 'Cli'"/>
+    </Target>
 
-		<Copy
-			SourceFiles="@(ExistingRelatedFiles)"
-			DestinationFiles="@(ExistingRelatedFiles->'$(OutDir)%(DestinationSubDirectory)%(Filename)%(Extension)')"
-			SkipUnchangedFiles="$(SkipCopyUnchangedFiles)">
-			<Output TaskParameter="DestinationFiles" ItemName="FileWritesShareable"/>
-		</Copy>
-	</Target>
+    <Target Name="BuildGtk" DependsOnTargets="BuildNet">
+        <MSBuild Projects="@(ProjectItem)" Condition="'%(ProjectType)' == 'Gtk'"/>
+    </Target>
+
+
+
+    <Target Name="Clean">
+        <MSBuild Projects="@(ProjectItem)" Targets="Clean"/>
+    </Target>
 
 </Project>

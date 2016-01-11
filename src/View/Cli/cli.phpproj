@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <Import Project="$(MSBuildExtensionsPath)\Phalanger\4.0\Phalanger.targets" />
+
+    <!-- Ensures that if this file changes it forces a rebuild -->
+    <PropertyGroup>
+        <MSBuildAllProjects>
+            $(MSBuildAllProjects);$(MSBuildThisFileFullPath)
+        </MSBuildAllProjects>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <CompilationMode>Pure</CompilationMode>
+    </PropertyGroup>
+
+	<!-- stub before some sources are added -->
+	<Target Name="PhalangerCompilerTarget"/>
+</Project>
