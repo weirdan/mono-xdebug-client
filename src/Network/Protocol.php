@@ -1,21 +1,16 @@
 <?php
 namespace Weirdan\Xdebug\Network;
 
-use function
-    socket_create_listen,
-    socket_getsockname,
-    socket_accept,
-    socket_getpeername,
-    socket_read,
-    strlen,
-    socket_shutdown,
-    socket_close;
+use
+    System\Net\Sockets;
+
+use function var_dump, strlen, str_repeat;
 
 
 class Protocol
 {
-    protected $socket;
-    protected $connection;
+    protected $listener = null;
+    protected $socket = null;
     protected $port = 9000;
 
     public function __construct()
@@ -26,25 +21,34 @@ class Protocol
     public function run()
     {
         $this->trace("Initialized XDebug protocol wrapper");
-        $this->socket = socket_create_listen($this->port);
-        socket_getsockname($this->socket, $addr, $port);
-        $tihs->trace("Created socket on port {$addr}:{$port}");
 
-        $this->connection = socket_accept($this->socket);
-        socket_getpeername($this->connection, $raddr, $rport);
+        $this->listener = new Sockets\TcpListener($this->port);
 
-        $this->traceIn("Accepted connection from {$raddr}:{$rport}");
+        $local = $this->listener->LocalEndpoint;
+        $this->trace("Created socket on port {$local->Address->toString()}:{$local->Port}");
 
-        while ($data = socket_read($this->connection, 2048)) {
+        $this->listener->Start();
+
+        $this->socket = $this->listener->acceptSocket();
+
+        $remote = $this->socket->RemoteEndPoint;
+        $this->traceIn("Accepted connection from {$remote->Address->toString()}:{$remote->Port}");
+
+        $data = (binary) str_repeat(0x00, 2048);
+        var_dump('begin', $data);
+        while ($this->socket->receive($data, 0, 2048, Sockets\SocketFlags::None)) {
             if (strlen($data)) {
+                var_dump($data);
                 $this->traceIn($data);
+                $data = (binary) str_repeat(0x00, 2048);
             }
         }
 
         $this->traceIn('Closing connection');
-        socket_shutdown($this->connection, 2);
-        socket_close($this->connection);
-        $this->connection = false;
+        $this->socket->shutdown(Sockets\SocketShutdown::Both);
+        $this->socket->close();
+
+        $this->socket = null;
     }
 
     protected function trace($msg)

@@ -19,6 +19,7 @@
     <ItemGroup>
         <Compile Include="Protocol.php"/>
         <Reference Include="PhpNetClassLibrary"/>
+		<Reference Include="System"/>
         <Reference Include="mscorlib"/>
     </ItemGroup>
 
